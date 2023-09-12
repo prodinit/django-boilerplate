@@ -208,7 +208,7 @@ DATABASES["default"]["CONN_MAX_AGE"] = 10
 # Absolute path to the directory static files should be collected to.
 # Example: "/var/www/example.com/static/"
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#static-root
-STATIC_ROOT = str(ROOT_DIR.path(".staticfiles"))
+STATIC_ROOT = str(APPS_DIR.path(".staticfiles"))
 
 # URL that handles the static files served from STATIC_ROOT.
 # Example: "http://example.com/static/", "http://static.example.com/"
@@ -242,3 +242,21 @@ REQUEST_ID_RESPONSE_HEADER = "REQUEST_ID"
 # --------------------------------------------------------------------------
 CORS_ALLOWED_ORIGINS = env.list("CORS_ALLOWED_ORIGINS", default=[])
 CORS_ALLOW_HEADERS = default_headers + ("access-control-allow-origin",)
+
+# rest_framework
+# ------------------------------------------------------------------------------
+DEFAULT_RENDERER_CLASSES = ("rest_framework.renderers.JSONRenderer",)
+
+if DEBUG:
+    DEFAULT_RENDERER_CLASSES = DEFAULT_RENDERER_CLASSES + ("rest_framework.renderers.BrowsableAPIRenderer",)
+
+REST_FRAMEWORK = {
+    "DEFAULT_RENDERER_CLASSES": DEFAULT_RENDERER_CLASSES,
+    "DEFAULT_PAGINATION_CLASS": "common.pagination.DefaultLimitOffsetPagination",
+    "DEFAULT_FILTER_BACKENDS": ("django_filters.rest_framework.DjangoFilterBackend",),
+    "DEFAULT_SCHEMA_CLASS": "rest_framework.schemas.coreapi.AutoSchema",
+    "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated"],
+    "DEFAULT_THROTTLE_RATES": {
+        "anon": "10000/day",
+    },
+}
