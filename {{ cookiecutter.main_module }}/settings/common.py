@@ -17,6 +17,7 @@ from django.utils.translation import gettext_lazy as _
 # Build paths inside the project like this: ROOT_DIR / 'subdir'.
 ROOT_DIR = environ.Path(__file__) - 3
 APPS_DIR = ROOT_DIR.path("{{ cookiecutter.main_module }}")
+# APPS_DIR = ROOT_DIR.path("dummy")
 
 env = environ.Env()
 
@@ -158,6 +159,7 @@ WSGI_APPLICATION = "wsgi.application"
 # URL CONFIGURATION
 # ------------------------------------------------------------------------------
 ROOT_URLCONF = "{{ cookiecutter.main_module }}.urls"
+# ROOT_URLCONF = "dummy.urls"
 
 # Use this to change base url path django admin
 DJANGO_ADMIN_URL = env.str("DJANGO_ADMIN_URL", default="admin")
@@ -192,6 +194,7 @@ TEMPLATES = [
 
 
 WSGI_APPLICATION = '{{ cookiecutter.main_module }}.wsgi.application'
+# WSGI_APPLICATION = 'dummy.wsgi.application'
 
 
 # DATABASE CONFIGURATION

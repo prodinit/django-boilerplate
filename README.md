@@ -37,3 +37,7 @@ For compatibility, `requirements.txt` and `requirements_dev.txt` can be updated 
 ```bash
 poetry export --without-hashes -f requirements.txt -o requirements.txt
 ```
+and 
+```bash
+poetry export --without-hashes -f requirements.txt -o requirements_dev.txt --with dev
+```
