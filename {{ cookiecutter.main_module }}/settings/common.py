@@ -112,8 +112,8 @@ DEBUG = env.bool("DJANGO_DEBUG", False)
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
 # although not all choices may be available on all operating systems.
 # In a Windows environment this must be set to your system time zone.
-# TIME_ZONE = "{{ cookiecutter.timezone }}"
-TIME_ZONE = "UTC"
+TIME_ZONE = "{{ cookiecutter.timezone }}"
+# TIME_ZONE = "UTC"
 
 # If you set this to False, Django will not use timezone-aware datetimes.
 USE_TZ = True
@@ -255,7 +255,7 @@ if DEBUG:
 
 REST_FRAMEWORK = {
     "DEFAULT_RENDERER_CLASSES": DEFAULT_RENDERER_CLASSES,
-    "DEFAULT_PAGINATION_CLASS": "common.pagination.DefaultLimitOffsetPagination",
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
     "DEFAULT_FILTER_BACKENDS": ("django_filters.rest_framework.DjangoFilterBackend",),
     "DEFAULT_SCHEMA_CLASS": "rest_framework.schemas.coreapi.AutoSchema",
     "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated"],
