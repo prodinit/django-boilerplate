@@ -1,5 +1,6 @@
 from rest_framework import viewsets
 from rest_framework.response import Response
+from django.http import HttpResponse
 from rest_framework.decorators import action
 
 class HealthViewSet(viewsets.ViewSet):
@@ -11,4 +12,4 @@ class HealthViewSet(viewsets.ViewSet):
     
     @action(methods=['get'], detail=False, permission_classes=[], url_path='health')
     def health(self, request, *args, **kwargs):
-        return Response(status=200)
+        return HttpResponse(f"{{ cookiecutter.project_name }} backend running!", status_code=200)

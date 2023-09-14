@@ -17,7 +17,7 @@ from django.utils.translation import gettext_lazy as _
 # Build paths inside the project like this: ROOT_DIR / 'subdir'.
 ROOT_DIR = environ.Path(__file__) - 3
 APPS_DIR = ROOT_DIR.path("{{ cookiecutter.main_module }}")
-# APPS_DIR = ROOT_DIR.path("dummy")
+
 
 env = environ.Env()
 
@@ -113,7 +113,7 @@ DEBUG = env.bool("DJANGO_DEBUG", False)
 # although not all choices may be available on all operating systems.
 # In a Windows environment this must be set to your system time zone.
 TIME_ZONE = "{{ cookiecutter.timezone }}"
-# TIME_ZONE = "UTC"
+
 
 # If you set this to False, Django will not use timezone-aware datetimes.
 USE_TZ = True
@@ -159,7 +159,7 @@ WSGI_APPLICATION = "wsgi.application"
 # URL CONFIGURATION
 # ------------------------------------------------------------------------------
 ROOT_URLCONF = "{{ cookiecutter.main_module }}.urls"
-# ROOT_URLCONF = "dummy.urls"
+
 
 # Use this to change base url path django admin
 DJANGO_ADMIN_URL = env.str("DJANGO_ADMIN_URL", default="admin")
@@ -194,7 +194,7 @@ TEMPLATES = [
 
 
 WSGI_APPLICATION = '{{ cookiecutter.main_module }}.wsgi.application'
-# WSGI_APPLICATION = 'dummy.wsgi.application'
+
 
 
 # DATABASE CONFIGURATION
@@ -255,7 +255,7 @@ if DEBUG:
 
 REST_FRAMEWORK = {
     "DEFAULT_RENDERER_CLASSES": DEFAULT_RENDERER_CLASSES,
-    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
+    "DEFAULT_PAGINATION_CLASS": "base.pagination.DefaultLimitOffsetPagination",
     "DEFAULT_FILTER_BACKENDS": ("django_filters.rest_framework.DjangoFilterBackend",),
     "DEFAULT_SCHEMA_CLASS": "rest_framework.schemas.coreapi.AutoSchema",
     "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated"],
