@@ -12,4 +12,4 @@ class HealthViewSet(viewsets.ViewSet):
     
     @action(methods=['get'], detail=False, permission_classes=[], url_path='health')
     def health(self, request, *args, **kwargs):
-        return HttpResponse(f"{{ cookiecutter.project_name }} backend running!", status_code=200)
+        return HttpResponse(f"{{ cookiecutter.project_name }} backend running!", status=200)

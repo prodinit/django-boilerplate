@@ -1,11 +1,8 @@
 [tool.poetry]
-# name = "dummy" 
 name = "{{ cookiecutter.main_module }}"
 
-# version = "0.0.0"
 version = "{{ cookiecutter.version }}"
 
-# description = "Description"
 description = "{{ cookiecutter.project_description }}"
 
 authors = ["Your Name <you@example.com>"]
@@ -72,7 +69,7 @@ boto3 = "~1.26.47"
 # -------------------------------------
 django-redis = "^5.2"
 hiredis = "^2.0"
-
+pycountry = "^22.3.5"
 
 
 [tool.poetry.dev-dependencies]
@@ -110,10 +107,8 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.isort]
 profile = "black"
-# known_first_party = "dummy"
 known_first_party = "{{ cookiecutter.main_module }}"
 default_section = "THIRDPARTY"
-# import_heading_firstparty = "dummy Stuff"
 import_heading_firstparty = "{{ cookiecutter.main_module }} Stuff"
 import_heading_stdlib = "Standard Library"
 import_heading_thirdparty = "Third Party Stuff"
