@@ -38,7 +38,8 @@ DJANGO_APPS = [
 
 THIRD_PARTY_APPS = [
     "rest_framework",  # http://www.django-rest-framework.org/
-    # "mail_templated",  # https://github.com/artemrizhov/django-mail-templated
+    "rest_framework.authtoken",
+    "mail_templated",  # https://github.com/artemrizhov/django-mail-templated
     "django_extensions",  # http://django-extensions.readthedocs.org/
     "drf_yasg",
     "versatileimagefield",  # https://github.com/WGBH/django-versatileimagefield/
@@ -57,7 +58,7 @@ INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
 # django.contrib.auth
 # ------------------------------------------------------------------------------
-# AUTH_USER_MODEL = "users.User"
+AUTH_USER_MODEL = "users.User"
 AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
 ]
@@ -263,3 +264,18 @@ REST_FRAMEWORK = {
         "anon": "10000/day",
     },
 }
+
+# EMAIL CONFIGURATION
+# ------------------------------------------------------------------------------
+EMAIL_BACKEND ="django.core.mail.backends.smtp.EmailBackend"
+DEFAULT_FROM_EMAIL = env(
+    "DEFAULT_FROM_EMAIL", default="{{ cookiecutter.default_from_email }}"
+)
+EMAIL_USE_TLS = True
+EMAIL_HOST = env("EMAIL_HOST", default="{{ cookiecutter.email_host }}")
+EMAIL_PORT = 587
+EMAIL_HOST_USER = DEFAULT_FROM_EMAIL
+EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
+DOMAIN = env("DOMAIN", default="{{ cookiecutter.domain }}")

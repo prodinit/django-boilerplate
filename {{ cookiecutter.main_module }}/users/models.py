@@ -1,28 +1,43 @@
 from typing import List
 
-from django.contrib.auth.models import AbstractBaseUser
+from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils.functional import cached_property
 from django.forms.models import model_to_dict
+from django.dispatch import receiver
+from rest_framework.authtoken.models import Token
+from django.db.models.signals import post_save
 
 from base.abstract_models import AbstractBase
 from users.validators import phone_regex, valid_email
-from users.choices import COUNTRY_CHOICES, GENDER_CHOICES
+from users.choices import COUNTRY_CHOICES, GENDER_CHOICES, AUTH_PROVIDER
 from users.managers import UserAllObjectsManager, UserRoleAllObjectsManager
 
-class User(AbstractBase, AbstractBaseUser):
-    firstname: str = models.CharField(max_length=50, blank=True)
-    lastname: str = models.CharField(max_length=50, blank=True)
-    username: str = models.CharField(max_length=200, blank=True)
-    email: str = models.EmailField(unique=True, validators=[valid_email])
+class User(AbstractUser, AbstractBase):
+    # We dont need date_joined from AbstractUser model as we have built our custom AbstractBase model with created_at and updated_at fields
+    date_joined = None 
+
+    first_name: str = models.CharField(max_length=50, blank=True, null=True)
+    last_name: str = models.CharField(max_length=50, blank=True, null=True)
+    username: str = models.CharField(max_length=200, blank=True, null=True)
+    email: str = models.EmailField(unique=True, blank=True, null=True, validators=[valid_email])
+    is_email_verified: bool = models.BooleanField(default=False)
     phone_number: str = models.CharField(
         max_length=16,
+        unique=True,
         blank=True,
         null=True,
         validators=[phone_regex],
     )
+    is_phone_number_verified: bool = models.BooleanField(default=False)
     is_active: bool = models.BooleanField(
-        default=True,
+        default=False,
+    )
+    is_staff: bool = models.BooleanField(
+        default=False,
+    )
+    is_superuser: bool = models.BooleanField(
+        default=False,
     )
     address: str = models.TextField(
         blank=True,
@@ -50,8 +65,17 @@ class User(AbstractBase, AbstractBaseUser):
         null=True,
         max_length=22,
     )
+    auth_provider = models.CharField(
+        choices=AUTH_PROVIDER,
+        null=True,
+        blank=True,
+        max_length=50,
+    )
 
+    EMAIL_FIELD = "email"
     USERNAME_FIELD = "email"
+    REQUIRED_FIELDS = []
+
     objects = UserAllObjectsManager()
     
     class Meta:
@@ -88,6 +112,13 @@ class User(AbstractBase, AbstractBaseUser):
         Get role of currect user
         """
         return list(UserRole.objects.filter(user_id=self.id).values_list("role", flat=True))
+    
+    @property
+    def token(self):
+        """
+        Get token of current user
+        """
+        return Token.objects.get(user_id=self.id).key
 
     def run_validators(self) -> None:
         for field_name, field_value in model_to_dict(self).items():
@@ -101,6 +132,11 @@ class User(AbstractBase, AbstractBaseUser):
     def save(self, *args, **kwargs):
         self.run_validators()
         return super().save(*args, **kwargs)
+
+# method for create token of user
+@receiver(post_save, sender=User, dispatch_uid="create_token")
+def create_token(sender, instance, **kwargs):
+    Token.objects.get_or_create(user=instance)
     
 class UserRole(AbstractBase):
     user: User = models.ForeignKey(
@@ -108,14 +144,15 @@ class UserRole(AbstractBase):
         on_delete=models.CASCADE,
     )
 
-    # Add more role according to the requirement
     ADMIN = "ADMIN"
+    USER = "User"
     ROLE_CHOICES = (
         (ADMIN, "Admin"),
+        (USER, "User")
     )
     role: str = models.CharField(
         choices=ROLE_CHOICES,
-        default=ADMIN,
+        default=USER,
         max_length=16,
     )
 
