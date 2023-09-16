@@ -8,6 +8,6 @@
     "email_host": "smtp.gmail.com",
     "version": "0.0.0",
     "_copy_without_render": [
-        "{{cookiecutter.main_module}}/templates/*.tpl"
+        "*.tpl"
     ]
 }
