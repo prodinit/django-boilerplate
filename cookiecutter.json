@@ -6,5 +6,8 @@
     "timezone": "UTC",
     "default_from_email": "support@{{ cookiecutter.main_module }}.com",
     "email_host": "smtp.gmail.com",
-    "version": "0.0.0"
+    "version": "0.0.0",
+    "_copy_without_render": [
+        "{{cookiecutter.main_module}}/templates/*.tpl"
+    ]
 }
