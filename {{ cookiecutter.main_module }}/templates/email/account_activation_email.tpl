@@ -1,5 +1,3 @@
-{% extends "mail_templated/base.tpl" %}
-
 {# ======== Subject of email #}
 {% block subject %}
 Activate your account at {{ cookiecutter.project_name }}
