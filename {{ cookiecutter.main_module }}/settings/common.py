@@ -278,4 +278,4 @@ EMAIL_HOST_USER = DEFAULT_FROM_EMAIL
 EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
-DOMAIN = env("DOMAIN", default="{{ cookiecutter.domain }}")
+DOMAIN = env("DOMAIN", default="http://127.0.0.1:8000")
