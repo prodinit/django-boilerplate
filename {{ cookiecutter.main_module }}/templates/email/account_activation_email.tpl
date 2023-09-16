@@ -10,7 +10,7 @@ Please use the activation link to verify your email and successfully signup.
 </p>
 
 <p>
-<a href="{{ domain }}api/activate?token={{ token }}">Confirm Email</a>
+<a href="activation_url=activation_url">Confirm Email</a>
 </p>
 <p>Thanks!</p>
 {% endblock html %}

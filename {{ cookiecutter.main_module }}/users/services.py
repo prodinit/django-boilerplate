@@ -6,7 +6,8 @@ from users.models import User
 class AuthServices:
     @staticmethod
     def send_account_activation_email(user: User, template_name):
-        ctx = {"domain": settings.DOMAIN, "token": user.token}
+        activation_url = f"{settings.DOMAIN}/api/activate?token={user.token}"
+        ctx = {"activation_url": activation_url}
         message = EmailMessage(
             from_email=settings.DEFAULT_FROM_EMAIL,
             to=[user.email],
