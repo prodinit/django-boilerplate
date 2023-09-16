@@ -22,7 +22,7 @@ from django.urls import path, include
 from django.conf import settings
 from django.urls import URLPattern, URLResolver
 from django.views.generic import TemplateView
-from .api_urls import urlpatterns
+from .api_urls import urlpatterns as ulp
 
 URL = Union[URLPattern, URLResolver]
 URLList = List[URL]
@@ -31,7 +31,7 @@ urlpatterns: "URLList" = [
     path("", TemplateView.as_view(template_name="pages/home.html"), name="home"),
     path("about/", TemplateView.as_view(template_name="pages/about.html"), name="about"),
     path(f"{settings.DJANGO_ADMIN_URL}/", admin.site.urls),
-    path("api/", include(urlpatterns))
+    path("api/", include(ulp))
 ]
 
 # Django Debug Toolbar

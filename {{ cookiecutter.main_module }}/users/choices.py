@@ -11,3 +11,12 @@ GENDER_CHOICES = (
     (FEMALE, "Female"),
     (PREFER_NOT_TO_RESPOND, "Prefer not to respond"),
 )
+
+EMAIL = "EMAIL"
+PHONE_NUMBER = "PHONE_NUMBER"
+GOOGLE = "GOOGLE"
+AUTH_PROVIDER = (
+    (EMAIL, "email"),
+    (PHONE_NUMBER, "phone_number"),
+    (GOOGLE, "google")
+)
