@@ -49,3 +49,14 @@ class SignupSerializer(serializers.Serializer):
     def validate_password(self, value):
         password_validation.validate_password(value)
         return value
+
+class PasswordResetSerializer(serializers.Serializer):
+    email = serializers.EmailField(required=True)
+
+class PasswordResetConfirmSerializer(serializers.Serializer):
+    new_password = serializers.CharField(required=True)
+    token = serializers.CharField(required=True)
+
+    def validate_new_password(self, value):
+        password_validation.validate_password(value)
+        return value

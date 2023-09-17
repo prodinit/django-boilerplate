@@ -1,9 +1,13 @@
 import jwt 
+from uuid import UUID
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
+from django.utils.encoding import force_bytes, force_str
 
-from users.exceptions import NotAuthenticated
+from users.exceptions import NotAuthenticated, RequestValidationError
 
 HS256_ALGORITHM = "HS256"
 
@@ -37,3 +41,47 @@ def get_user_for_token(token: str, scope: str):
         raise NotAuthenticated("Invalid token")
     else:
         return user
+    
+def encode_uuid_to_base64(uuid_) -> str:
+    """Returns a  urlsafe based64 encoded representation of a UUID object or UUID like string."""
+    return urlsafe_base64_encode(force_bytes(uuid_))
+
+
+def decode_uuid_from_base64(uuid_value: str):
+    """Given a base64 encoded string, try to decode it to a valid UUID object.
+
+    Returns a valid UUID value or None
+    """
+    try:
+        return force_str(urlsafe_base64_decode(uuid_value))
+    except (ValueError, OverflowError, TypeError):
+        return None
+    
+def get_token_for_password_reset(user):
+    return "{}::{}".format(
+        encode_uuid_to_base64(user.pk), PasswordResetTokenGenerator().make_token(user)
+    )
+
+def get_user_for_password_reset_token(token):
+    default_error_messages = {
+        "invalid_token": "Invalid token or the token has expired",
+        "user_not_found": "No user exists for given token",
+    }
+    try:
+        uidb64, reset_token = token.split("::")
+    except ValueError:
+        raise RequestValidationError(default_error_messages["invalid_token"])
+
+    user_id = decode_uuid_from_base64(uidb64)
+    if not user_id:
+        raise RequestValidationError(default_error_messages["invalid_token"])
+
+    user = get_user_model().objects.filter(id=user_id).first()
+
+    if not user:
+        raise RequestValidationError(default_error_messages["user_not_found"])
+
+    if not PasswordResetTokenGenerator().check_token(user, reset_token):
+        raise RequestValidationError(default_error_messages["invalid_token"])
+
+    return user

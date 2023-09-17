@@ -9,9 +9,11 @@ from rest_framework.exceptions import ValidationError
 from django.shortcuts import redirect
 from django.contrib.auth import authenticate, logout
 
-from users.serializers import LoginSerializer, SignupSerializer, AuthUserSerializer
+from users.serializers import LoginSerializer, SignupSerializer, AuthUserSerializer, PasswordResetSerializer, PasswordResetConfirmSerializer
 from users.services import AuthServices
-from users.exceptions import UnableToSendOTP, UnableToSendActivationEmail, InvalidLoginArguments
+from users.models import User
+from users.tokens import get_user_for_password_reset_token
+from users.exceptions import UnableToSendOTP, UnableToSendActivationEmail, InvalidLoginArguments, UnableToSendPasswordResetEmail
 
 logger = logging.getLogger(__name__)
 
@@ -116,15 +118,62 @@ class AuthViewSet(viewsets.GenericViewSet):
     
     @action(methods=['POST'], detail=False)
     def password_reset(self, request, *args, **kwargs):
-        print(request)
-        return Response({}, status=200)
+        json_response = {"success": True, "status_code": status.HTTP_200_OK, "message": "Further instructions will be sent to the email if it exists", "error": None, "data": None}
+        try:
+            import pdb
+            pdb.set_trace()
+            serializer = PasswordResetSerializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            user = User.objects.filter(email__iexact=serializer.validated_data['email']).first()
+            if user:
+                AuthServices.send_password_reset_mail(user)
+        except ValidationError as ex:
+            for error in ex.__dict__['detail']:
+                err_msg = ex.__dict__['detail'][error][0]
+                json_response["error"] = f"{error}: {err_msg}"
+                break
+            json_response["success"] = False
+            json_response["message"] = "Validation Failed"
+            json_response["status_code"] = status.HTTP_400_BAD_REQUEST
+        except UnableToSendPasswordResetEmail as ex:
+            logger.info(f"Exception occured: {ex}")
+            json_response["success"] = False
+            json_response["status_code"] = status.HTTP_500_INTERNAL_SERVER_ERROR
+            json_response["message"] = f"Unable to send password reset email"
+            json_response["error"] = f"{ex}"
+        except Exception as ex:
+            json_response["success"] = False
+            json_response["status_code"] = status.HTTP_500_INTERNAL_SERVER_ERROR
+            json_response["message"] = f"Something went wrong"
+            json_response["error"] = f"{ex}"
+
+        return Response(json_response, status=json_response['status_code'])
     
-    @action(methods=['POST'], detail=False)
+    @action(methods=['POST'], detail=False, permission_classes=[IsAuthenticated])
     def password_change(self, request, *args, **kwargs):
-        print(request)
         return Response({}, status=200)
     
     @action(methods=['POST'], detail=False)
     def password_reset_confirm(self, request, *args, **kwargs):
-        print(request)
-        return Response({}, status=200)
+        try:
+            json_response = {"success": True, "status_code": status.HTTP_200_OK, "message": "Password Reset successful", "error": None, "data": None}
+            serializer = PasswordResetConfirmSerializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            user = get_user_for_password_reset_token(serializer.validated_data['token'])
+            user.set_password(serializer.validated_data["new_password"])
+            user.save()
+        except ValidationError as ex:
+            for error in ex.__dict__['detail']:
+                err_msg = ex.__dict__['detail'][error][0]
+                json_response["error"] = f"{error}: {err_msg}"
+                break
+            json_response["success"] = False
+            json_response["message"] = "Validation Failed"
+            json_response["status_code"] = status.HTTP_400_BAD_REQUEST
+        except Exception as ex:
+            json_response["success"] = False
+            json_response["status_code"] = status.HTTP_500_INTERNAL_SERVER_ERROR
+            json_response["message"] = f"Something went wrong"
+            json_response["error"] = f"{ex}"
+        
+        return Response(json_response, status=json_response['status_code'])
