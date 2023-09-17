@@ -7,7 +7,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.authtoken.models import Token
 from rest_framework.exceptions import ValidationError
 from django.shortcuts import redirect
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, logout
 
 from users.serializers import LoginSerializer, SignupSerializer, AuthUserSerializer
 from users.services import AuthServices
@@ -102,10 +102,17 @@ class AuthViewSet(viewsets.GenericViewSet):
         logger.info(f"Account Activated for user: {user.email}")
         return redirect('/')
     
-    @action(methods=['POST'], detail=False)
+    @action(methods=['POST'], detail=False, permission_classes=[IsAuthenticated])
     def logout(self, request, *args, **kwargs):
-        print(request)
-        return Response({}, status=200)
+        json_response = {"success": True, "status_code": status.HTTP_200_OK, "message": "Logout Successful", "error": None, "data": None}
+        try:
+            logout(request)
+        except Exception as ex:
+            json_response["success"] = False
+            json_response["status_code"] = status.HTTP_500_INTERNAL_SERVER_ERROR
+            json_response["message"] = f"Something went wrong"
+            json_response["error"] = f"{ex}"
+        return Response(json_response, status=json_response['status_code'])
     
     @action(methods=['POST'], detail=False)
     def password_reset(self, request, *args, **kwargs):
