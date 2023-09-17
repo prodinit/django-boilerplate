@@ -9,8 +9,7 @@ from rest_framework.authtoken.models import Token
 from django.db.models.signals import post_save
 
 from base.abstract_models import AbstractBase
-from users.validators import phone_regex, valid_email
-from users.choices import COUNTRY_CHOICES, GENDER_CHOICES, AUTH_PROVIDER
+from users.choices import COUNTRY_CHOICES, GENDER_CHOICES, AUTH_PROVIDER, EMAIL
 from users.managers import UserAllObjectsManager, UserRoleAllObjectsManager
 
 class User(AbstractUser, AbstractBase):
@@ -20,14 +19,13 @@ class User(AbstractUser, AbstractBase):
     first_name: str = models.CharField(max_length=50, blank=True, null=True)
     last_name: str = models.CharField(max_length=50, blank=True, null=True)
     username: str = models.CharField(max_length=200, blank=True, null=True)
-    email: str = models.EmailField(unique=True, blank=True, null=True, validators=[valid_email])
+    email: str = models.EmailField(unique=True)
     is_email_verified: bool = models.BooleanField(default=False)
     phone_number: str = models.CharField(
         max_length=16,
         unique=True,
         blank=True,
         null=True,
-        validators=[phone_regex],
     )
     is_phone_number_verified: bool = models.BooleanField(default=False)
     is_active: bool = models.BooleanField(
@@ -67,8 +65,7 @@ class User(AbstractUser, AbstractBase):
     )
     auth_provider = models.CharField(
         choices=AUTH_PROVIDER,
-        null=True,
-        blank=True,
+        default=EMAIL,
         max_length=50,
     )
 

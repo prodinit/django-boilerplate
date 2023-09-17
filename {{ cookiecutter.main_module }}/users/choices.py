@@ -15,8 +15,10 @@ GENDER_CHOICES = (
 EMAIL = "EMAIL"
 PHONE_NUMBER = "PHONE_NUMBER"
 GOOGLE = "GOOGLE"
+GITHUB = "GITHUB"
 AUTH_PROVIDER = (
     (EMAIL, "email"),
     (PHONE_NUMBER, "phone_number"),
-    (GOOGLE, "google")
+    (GOOGLE, "google"),
+    (GITHUB, "github")
 )
