@@ -279,3 +279,68 @@ EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
 DOMAIN = env("DOMAIN", default="http://127.0.0.1:8000")
+
+
+# LOGGING CONFIGURATION
+# ------------------------------------------------------------------------------
+# See: https://docs.djangoproject.com/en/dev/ref/settings/#logging
+# Default logging for Django. This sends an email to the site admins on every
+# HTTP 500 error. Depending on DEBUG, all other log records are either sent to
+# the console (DEBUG=True) or discarded by mean of the NullHandler (DEBUG=False).
+# See http://docs.djangoproject.com/en/dev/topics/logging
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "filters": {
+        "require_debug_false": {"()": "django.utils.log.RequireDebugFalse"},
+        "request_id": {"()": "log_request_id.filters.RequestIDFilter"},
+    },
+    "formatters": {
+        "complete": {
+            # NOTE: make sure to include "request_id" in filters when using this
+            # formatter in any handlers.
+            "format": "%(asctime)s:[%(levelname)s]:logger=%(name)s:request_id=%(request_id)s message='%(message)s'"
+        },
+        "simple": {"format": "%(levelname)s:%(asctime)s: %(message)s"},
+        "django.server": {
+            "()": "django.utils.log.ServerFormatter",
+            "format": "[%(server_time)s] %(message)s",
+        },
+    },
+    "handlers": {
+        "null": {"level": "DEBUG", "class": "logging.NullHandler"},
+        "console": {
+            "level": "DEBUG",
+            "class": "logging.StreamHandler",
+            "formatter": "complete",
+            "filters": ["request_id"],
+        },
+        "django.server": {
+            "level": "INFO",
+            "class": "logging.StreamHandler",
+            "formatter": "django.server",
+        },
+        "mail_admins": {
+            "level": "ERROR",
+            "filters": ["require_debug_false"],
+            "class": "django.utils.log.AdminEmailHandler",
+        }
+    },
+    "loggers": {
+        "django": {"handlers": ["null"], "propagate": False, "level": "INFO"},
+        "django.request": {
+            "handlers": ["mail_admins", "console"],
+            "level": "ERROR",
+            "propagate": False,
+        },
+        "django.server": {
+            "handlers": ["django.server"],
+            "level": "INFO",
+            "propagate": False,
+        },
+        "{{ cookiecutter.main_module }}": {"handlers": ["console"], "level": "INFO", "propagate": False},
+        # Catch All Logger -- Captures any other logging
+        "": {"handlers": ["console",], "level": "ERROR", "propagate": True},
+    },
+}
