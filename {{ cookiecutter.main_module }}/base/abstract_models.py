@@ -15,10 +15,12 @@ class UUIDModel(models.Model):
     class Meta:
         abstract = True
 
+
 class AbstractBase(models.Model):
     """An abstract base class model that provides bunch of necessary options.
     Recommended to use with every model
     """
+
     id = models.BigAutoField(primary_key=True, editable=False)
     created_at = models.DateTimeField(auto_now_add=True)
     last_updated_at = models.DateTimeField(auto_now=True)

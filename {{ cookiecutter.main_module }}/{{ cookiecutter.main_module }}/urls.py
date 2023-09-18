@@ -29,9 +29,11 @@ URLList = List[URL]
 
 urlpatterns: "URLList" = [
     path("", TemplateView.as_view(template_name="pages/home.html"), name="home"),
-    path("about/", TemplateView.as_view(template_name="pages/about.html"), name="about"),
+    path(
+        "about/", TemplateView.as_view(template_name="pages/about.html"), name="about"
+    ),
     path(f"{settings.DJANGO_ADMIN_URL}/", admin.site.urls),
-    path("api/", include(ulp))
+    path("api/", include(ulp)),
 ]
 
 # Django Debug Toolbar

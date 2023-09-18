@@ -1,6 +1,7 @@
 from rest_framework.pagination import LimitOffsetPagination, PageNumberPagination
 from rest_framework.response import Response
 
+
 class DefaultLimitOffsetPagination(LimitOffsetPagination):
     max_limit = 50
 
@@ -30,7 +31,10 @@ class DefaultPageNumberPagination(PageNumberPagination):
             {
                 "count": self.page.paginator.count,
                 "num_of_pages": self.page.paginator.num_pages,
-                "links": {"next": self.get_next_link(), "previous": self.get_previous_link()},
+                "links": {
+                    "next": self.get_next_link(),
+                    "previous": self.get_previous_link(),
+                },
                 "results": data,
             }
         )

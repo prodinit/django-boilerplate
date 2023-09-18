@@ -11,6 +11,7 @@ from users.tokens import get_token_for_password_reset
 
 logger = logging.getLogger(__name__)
 
+
 class AuthServices:
     @staticmethod
     def send_main(user: User, template_name, ctx):
@@ -29,7 +30,9 @@ class AuthServices:
             ctx = {"activation_url": activation_url}
             AuthServices.send_main(user, template_name, ctx)
         except Exception as ex:
-            logger.info(f"Unable to send account activation email to {user.email}. Error: {ex}")
+            logger.info(
+                f"Unable to send account activation email to {user.email}. Error: {ex}"
+            )
             raise UnableToSendActivationEmail(
                 f"Unable to send account activation email to {user.email}. Error: {ex}"
             )
@@ -43,26 +46,35 @@ class AuthServices:
         password=None,
         username=None,
     ) -> User:
-        user = User.objects.create_user(email=email, phone_number=phone_number, first_name=first_name, last_name=last_name, username=username, password=password)
+        user = User.objects.create_user(
+            email=email,
+            phone_number=phone_number,
+            first_name=first_name,
+            last_name=last_name,
+            username=username,
+            password=password,
+        )
         return user
 
-    @staticmethod    
+    @staticmethod
     def generate_otp(length=6):
         """
         A util function which may be used in case of phone number verification and OTP based login
         """
         characters = string.digits
-        otp = ''.join(random.choice(characters) for _ in range(length))
+        otp = "".join(random.choice(characters) for _ in range(length))
         return otp
-    
+
     @staticmethod
     def send_password_reset_mail(user: User):
         try:
             password_confirm = f"{settings.DOMAIN}/password-confirm?token={get_token_for_password_reset(user)}"
             ctx = {"password_confirm": password_confirm}
-            AuthServices.send_main(user, 'email/password_reset_email.tpl', ctx)
+            AuthServices.send_main(user, "email/password_reset_email.tpl", ctx)
         except Exception as ex:
-            logger.info(f"Unable to send account activation email to {user.email}. Error: {ex}")
+            logger.info(
+                f"Unable to send account activation email to {user.email}. Error: {ex}"
+            )
             raise UnableToSendPasswordResetEmail(
                 f"Unable to send password reset email to {user.email}. Error: {ex}"
             )

@@ -12,9 +12,10 @@ from base.abstract_models import AbstractBase
 from users.choices import COUNTRY_CHOICES, GENDER_CHOICES, AUTH_PROVIDER, EMAIL
 from users.managers import UserAllObjectsManager, UserRoleAllObjectsManager
 
+
 class User(AbstractUser, AbstractBase):
     # We dont need date_joined from AbstractUser model as we have built our custom AbstractBase model with created_at and updated_at fields
-    date_joined = None 
+    date_joined = None
 
     first_name: str = models.CharField(max_length=50, blank=True, null=True)
     last_name: str = models.CharField(max_length=50, blank=True, null=True)
@@ -56,7 +57,9 @@ class User(AbstractUser, AbstractBase):
         null=True,
         max_length=12,
     )
-    country: str = models.CharField(blank=True, null=True, max_length=2, choices=COUNTRY_CHOICES)
+    country: str = models.CharField(
+        blank=True, null=True, max_length=2, choices=COUNTRY_CHOICES
+    )
     gender: str = models.CharField(
         choices=GENDER_CHOICES,
         blank=True,
@@ -74,13 +77,13 @@ class User(AbstractUser, AbstractBase):
     REQUIRED_FIELDS = []
 
     objects = UserAllObjectsManager()
-    
+
     class Meta:
         ordering = ("-created_at",)
 
     def __str__(self):
         return f"{self.id}"
-    
+
     @cached_property
     def all_roles(self) -> List[str]:
         """
@@ -91,9 +94,11 @@ class User(AbstractUser, AbstractBase):
         self.all_roles will return the response
         @return: list
         """
-        user_roles = UserRole.objects.filter(user_id=self.id).values_list("role", flat=True)
+        user_roles = UserRole.objects.filter(user_id=self.id).values_list(
+            "role", flat=True
+        )
         return list(user_roles)
-    
+
     def has_role(self, role) -> bool:
         """
         Check if current user has requested role
@@ -102,14 +107,16 @@ class User(AbstractUser, AbstractBase):
         """
         user_roles = self.all_roles
         return role in user_roles
-    
+
     @property
     def role(self):
         """
         Get role of currect user
         """
-        return list(UserRole.objects.filter(user_id=self.id).values_list("role", flat=True))
-    
+        return list(
+            UserRole.objects.filter(user_id=self.id).values_list("role", flat=True)
+        )
+
     @property
     def token(self):
         """
@@ -120,8 +127,8 @@ class User(AbstractUser, AbstractBase):
     def run_validators(self) -> None:
         for field_name, field_value in model_to_dict(self).items():
             model_field = getattr(User, field_name)
-            field = getattr(model_field, 'field', object())
-            validators = getattr(field, 'validators', list())
+            field = getattr(model_field, "field", object())
+            validators = getattr(field, "validators", list())
             for validator_func in validators:
                 if field_value is not None:
                     validator_func(field_value)
@@ -130,11 +137,13 @@ class User(AbstractUser, AbstractBase):
         self.run_validators()
         return super().save(*args, **kwargs)
 
+
 # method for create token of user
 @receiver(post_save, sender=User, dispatch_uid="create_token")
 def create_token(sender, instance, **kwargs):
     Token.objects.get_or_create(user=instance)
-    
+
+
 class UserRole(AbstractBase):
     user: User = models.ForeignKey(
         User,
@@ -143,10 +152,7 @@ class UserRole(AbstractBase):
 
     ADMIN = "ADMIN"
     USER = "User"
-    ROLE_CHOICES = (
-        (ADMIN, "Admin"),
-        (USER, "User")
-    )
+    ROLE_CHOICES = ((ADMIN, "Admin"), (USER, "User"))
     role: str = models.CharField(
         choices=ROLE_CHOICES,
         default=USER,
@@ -157,6 +163,6 @@ class UserRole(AbstractBase):
 
     def __str__(self):
         return f"User: {self.user_id} UserRole: {self.role}"
-    
+
     def save(self, *args, **kwargs):
         return super().save(*args, **kwargs)

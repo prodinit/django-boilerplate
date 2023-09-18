@@ -23,9 +23,9 @@ class AuthUserSerializer(UserSerializer):
 
     class Meta(UserSerializer.Meta):
         fields = UserSerializer.Meta.fields + ["auth_token"]
-        
+
     def get_auth_token(self, value):
-        return get_token_for_user(value, 'authentication')
+        return get_token_for_user(value, "authentication")
 
 
 class SignupSerializer(serializers.Serializer):
@@ -40,18 +40,20 @@ class SignupSerializer(serializers.Serializer):
         if value and User.objects.filter(email__iexact=value).exists():
             raise serializers.ValidationError("Email is already taken.")
         return value.strip()
-    
+
     def validate_phone_number(self, value):
         if value and User.objects.filter(phone_number__iexact=value).exists():
             raise serializers.ValidationError("Phone Number is already taken.")
         return value
-    
+
     def validate_password(self, value):
         password_validation.validate_password(value)
         return value
 
+
 class PasswordResetSerializer(serializers.Serializer):
     email = serializers.EmailField(required=True)
+
 
 class PasswordResetConfirmSerializer(serializers.Serializer):
     new_password = serializers.CharField(required=True)
@@ -60,7 +62,8 @@ class PasswordResetConfirmSerializer(serializers.Serializer):
     def validate_new_password(self, value):
         password_validation.validate_password(value)
         return value
-  
+
+
 class PasswordChangeSerializer(serializers.Serializer):
     new_password = serializers.CharField(required=True)
 
