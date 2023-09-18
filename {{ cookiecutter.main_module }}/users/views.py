@@ -9,7 +9,7 @@ from rest_framework.exceptions import ValidationError
 from django.shortcuts import redirect
 from django.contrib.auth import authenticate, logout
 
-from users.serializers import LoginSerializer, SignupSerializer, AuthUserSerializer, PasswordResetSerializer, PasswordResetConfirmSerializer
+from users.serializers import LoginSerializer, SignupSerializer, AuthUserSerializer, PasswordResetSerializer, PasswordResetConfirmSerializer, PasswordChangeSerializer
 from users.services import AuthServices
 from users.models import User
 from users.tokens import get_user_for_password_reset_token
@@ -151,7 +151,28 @@ class AuthViewSet(viewsets.GenericViewSet):
     
     @action(methods=['POST'], detail=False, permission_classes=[IsAuthenticated])
     def password_change(self, request, *args, **kwargs):
-        return Response({}, status=200)
+        json_response = {"success": True, "status_code": status.HTTP_200_OK, "message": "Password change successful", "error": None, "data": None}
+
+        try:
+            serializer = PasswordChangeSerializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            request.user.set_password(serializer.validated_data["new_password"])
+            request.user.save()
+        except ValidationError as ex:
+            for error in ex.__dict__['detail']:
+                err_msg = ex.__dict__['detail'][error][0]
+                json_response["error"] = f"{error}: {err_msg}"
+                break
+            json_response["success"] = False
+            json_response["message"] = "Validation Failed"
+            json_response["status_code"] = status.HTTP_400_BAD_REQUEST
+        except Exception as ex:
+            json_response["success"] = False
+            json_response["status_code"] = status.HTTP_500_INTERNAL_SERVER_ERROR
+            json_response["message"] = f"Something went wrong"
+            json_response["error"] = f"{ex}"
+
+        return Response(json_response, status=json_response['status_code'])
     
     @action(methods=['POST'], detail=False)
     def password_reset_confirm(self, request, *args, **kwargs):
