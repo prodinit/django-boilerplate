@@ -4,6 +4,7 @@ from rest_framework.authentication import BaseAuthentication
 
 from users.tokens import get_user_for_token
 
+
 class JWTAuthenticationMixin:
     def get_http_authorization(request):
         auth_rx = re.compile(r"^Bearer (.+)$")
@@ -16,7 +17,7 @@ class JWTAuthenticationMixin:
 
         token = token_rx_match.group(1)
         return token
-    
+
     def authenticate(self, request):
         token = JWTAuthenticationMixin.get_http_authorization(request)
         if not token:
@@ -36,4 +37,5 @@ class RestJWTAuthentication(JWTAuthenticationMixin, BaseAuthentication):
     It uses json web tokens (https://github.com/jpadilla/pyjwt) for trust
     data stored in the token.
     """
+
     pass

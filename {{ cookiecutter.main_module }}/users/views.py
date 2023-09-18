@@ -9,32 +9,56 @@ from rest_framework.exceptions import ValidationError
 from django.shortcuts import redirect
 from django.contrib.auth import authenticate, logout
 
-from users.serializers import LoginSerializer, SignupSerializer, AuthUserSerializer, PasswordResetSerializer, PasswordResetConfirmSerializer, PasswordChangeSerializer
+from users.serializers import (
+    LoginSerializer,
+    SignupSerializer,
+    AuthUserSerializer,
+    PasswordResetSerializer,
+    PasswordResetConfirmSerializer,
+    PasswordChangeSerializer,
+)
 from users.services import AuthServices
 from users.models import User
 from users.tokens import get_user_for_password_reset_token
-from users.exceptions import UnableToSendOTP, UnableToSendActivationEmail, InvalidLoginArguments, UnableToSendPasswordResetEmail
+from users.exceptions import (
+    UnableToSendOTP,
+    UnableToSendActivationEmail,
+    InvalidLoginArguments,
+    UnableToSendPasswordResetEmail,
+)
 
 logger = logging.getLogger(__name__)
+
 
 class AuthViewSet(viewsets.GenericViewSet):
     permission_classes = [AllowAny]
 
-    @action(methods=['POST'], detail=False)
+    @action(methods=["POST"], detail=False)
     def login(self, request, *args, **kwargs):
-        json_response = {"success": True, "status_code": status.HTTP_200_OK, "message": "Login Successful", "error": None, "data": None}
+        json_response = {
+            "success": True,
+            "status_code": status.HTTP_200_OK,
+            "message": "Login Successful",
+            "error": None,
+            "data": None,
+        }
 
         try:
             serializer = LoginSerializer(data=request.data)
             serializer.is_valid(raise_exception=True)
-            user = authenticate(username=serializer.validated_data['email'], password=serializer.validated_data['password'])
+            user = authenticate(
+                username=serializer.validated_data["email"],
+                password=serializer.validated_data["password"],
+            )
             if user is None:
-                raise InvalidLoginArguments("Invalid username/password. Please try again!")
+                raise InvalidLoginArguments(
+                    "Invalid username/password. Please try again!"
+                )
             data = AuthUserSerializer(user).data
-            json_response['data'] = data
+            json_response["data"] = data
         except ValidationError as ex:
-            for error in ex.__dict__['detail']:
-                err_msg = ex.__dict__['detail'][error][0]
+            for error in ex.__dict__["detail"]:
+                err_msg = ex.__dict__["detail"][error][0]
                 json_response["error"] = f"{error}: {err_msg}"
                 break
             json_response["success"] = False
@@ -50,17 +74,25 @@ class AuthViewSet(viewsets.GenericViewSet):
             json_response["status_code"] = status.HTTP_500_INTERNAL_SERVER_ERROR
             json_response["message"] = f"Something went wrong"
             json_response["error"] = f"{ex}"
-        return Response(json_response, status=json_response['status_code'])
-    
-    @action(methods=['POST'], detail=False)
+        return Response(json_response, status=json_response["status_code"])
+
+    @action(methods=["POST"], detail=False)
     def signup(self, request, *args, **kwargs):
-        json_response = {"success": True, "status_code": status.HTTP_200_OK, "message": "Verify you email to activate your account", "error": None, "data": None}
+        json_response = {
+            "success": True,
+            "status_code": status.HTTP_200_OK,
+            "message": "Verify you email to activate your account",
+            "error": None,
+            "data": None,
+        }
 
         try:
             serializer = SignupSerializer(data=request.data)
             serializer.is_valid(raise_exception=True)
             user = AuthServices.create_user_account(**serializer.validated_data)
-            AuthServices.send_account_activation_email(user, template_name="email/account_activation_email.tpl")
+            AuthServices.send_account_activation_email(
+                user, template_name="email/account_activation_email.tpl"
+            )
         except UnableToSendActivationEmail as ex:
             logger.info(f"Exception occured: {ex}")
             json_response["success"] = False
@@ -74,8 +106,8 @@ class AuthViewSet(viewsets.GenericViewSet):
             json_response["message"] = f"Unable to OTP"
             json_response["error"] = f"{ex}"
         except ValidationError as ex:
-            for error in ex.__dict__['detail']:
-                err_msg = ex.__dict__['detail'][error][0]
+            for error in ex.__dict__["detail"]:
+                err_msg = ex.__dict__["detail"][error][0]
                 json_response["error"] = f"{error}: {err_msg}"
                 break
             json_response["success"] = False
@@ -88,10 +120,10 @@ class AuthViewSet(viewsets.GenericViewSet):
             json_response["message"] = f"Something went wrong"
             json_response["error"] = f"{ex}"
         return Response(json_response, status=json_response["status_code"])
-    
-    @action(methods=['GET'], detail=False)
+
+    @action(methods=["GET"], detail=False)
     def activate(self, request, *args, **kwargs):
-        token = request.query_params.get('token')
+        token = request.query_params.get("token")
         if token:
             try:
                 user = Token.objects.get(key=token).user
@@ -102,11 +134,17 @@ class AuthViewSet(viewsets.GenericViewSet):
                 user.is_email_verified = True
                 user.save()
         logger.info(f"Account Activated for user: {user.email}")
-        return redirect('/')
-    
-    @action(methods=['POST'], detail=False, permission_classes=[IsAuthenticated])
+        return redirect("/")
+
+    @action(methods=["POST"], detail=False, permission_classes=[IsAuthenticated])
     def logout(self, request, *args, **kwargs):
-        json_response = {"success": True, "status_code": status.HTTP_200_OK, "message": "Logout Successful", "error": None, "data": None}
+        json_response = {
+            "success": True,
+            "status_code": status.HTTP_200_OK,
+            "message": "Logout Successful",
+            "error": None,
+            "data": None,
+        }
         try:
             logout(request)
         except Exception as ex:
@@ -114,22 +152,31 @@ class AuthViewSet(viewsets.GenericViewSet):
             json_response["status_code"] = status.HTTP_500_INTERNAL_SERVER_ERROR
             json_response["message"] = f"Something went wrong"
             json_response["error"] = f"{ex}"
-        return Response(json_response, status=json_response['status_code'])
-    
-    @action(methods=['POST'], detail=False)
+        return Response(json_response, status=json_response["status_code"])
+
+    @action(methods=["POST"], detail=False)
     def password_reset(self, request, *args, **kwargs):
-        json_response = {"success": True, "status_code": status.HTTP_200_OK, "message": "Further instructions will be sent to the email if it exists", "error": None, "data": None}
+        json_response = {
+            "success": True,
+            "status_code": status.HTTP_200_OK,
+            "message": "Further instructions will be sent to the email if it exists",
+            "error": None,
+            "data": None,
+        }
         try:
             import pdb
+
             pdb.set_trace()
             serializer = PasswordResetSerializer(data=request.data)
             serializer.is_valid(raise_exception=True)
-            user = User.objects.filter(email__iexact=serializer.validated_data['email']).first()
+            user = User.objects.filter(
+                email__iexact=serializer.validated_data["email"]
+            ).first()
             if user:
                 AuthServices.send_password_reset_mail(user)
         except ValidationError as ex:
-            for error in ex.__dict__['detail']:
-                err_msg = ex.__dict__['detail'][error][0]
+            for error in ex.__dict__["detail"]:
+                err_msg = ex.__dict__["detail"][error][0]
                 json_response["error"] = f"{error}: {err_msg}"
                 break
             json_response["success"] = False
@@ -147,11 +194,17 @@ class AuthViewSet(viewsets.GenericViewSet):
             json_response["message"] = f"Something went wrong"
             json_response["error"] = f"{ex}"
 
-        return Response(json_response, status=json_response['status_code'])
-    
-    @action(methods=['POST'], detail=False, permission_classes=[IsAuthenticated])
+        return Response(json_response, status=json_response["status_code"])
+
+    @action(methods=["POST"], detail=False, permission_classes=[IsAuthenticated])
     def password_change(self, request, *args, **kwargs):
-        json_response = {"success": True, "status_code": status.HTTP_200_OK, "message": "Password change successful", "error": None, "data": None}
+        json_response = {
+            "success": True,
+            "status_code": status.HTTP_200_OK,
+            "message": "Password change successful",
+            "error": None,
+            "data": None,
+        }
 
         try:
             serializer = PasswordChangeSerializer(data=request.data)
@@ -159,8 +212,8 @@ class AuthViewSet(viewsets.GenericViewSet):
             request.user.set_password(serializer.validated_data["new_password"])
             request.user.save()
         except ValidationError as ex:
-            for error in ex.__dict__['detail']:
-                err_msg = ex.__dict__['detail'][error][0]
+            for error in ex.__dict__["detail"]:
+                err_msg = ex.__dict__["detail"][error][0]
                 json_response["error"] = f"{error}: {err_msg}"
                 break
             json_response["success"] = False
@@ -172,20 +225,26 @@ class AuthViewSet(viewsets.GenericViewSet):
             json_response["message"] = f"Something went wrong"
             json_response["error"] = f"{ex}"
 
-        return Response(json_response, status=json_response['status_code'])
-    
-    @action(methods=['POST'], detail=False)
+        return Response(json_response, status=json_response["status_code"])
+
+    @action(methods=["POST"], detail=False)
     def password_reset_confirm(self, request, *args, **kwargs):
         try:
-            json_response = {"success": True, "status_code": status.HTTP_200_OK, "message": "Password Reset successful", "error": None, "data": None}
+            json_response = {
+                "success": True,
+                "status_code": status.HTTP_200_OK,
+                "message": "Password Reset successful",
+                "error": None,
+                "data": None,
+            }
             serializer = PasswordResetConfirmSerializer(data=request.data)
             serializer.is_valid(raise_exception=True)
-            user = get_user_for_password_reset_token(serializer.validated_data['token'])
+            user = get_user_for_password_reset_token(serializer.validated_data["token"])
             user.set_password(serializer.validated_data["new_password"])
             user.save()
         except ValidationError as ex:
-            for error in ex.__dict__['detail']:
-                err_msg = ex.__dict__['detail'][error][0]
+            for error in ex.__dict__["detail"]:
+                err_msg = ex.__dict__["detail"][error][0]
                 json_response["error"] = f"{error}: {err_msg}"
                 break
             json_response["success"] = False
@@ -196,5 +255,5 @@ class AuthViewSet(viewsets.GenericViewSet):
             json_response["status_code"] = status.HTTP_500_INTERNAL_SERVER_ERROR
             json_response["message"] = f"Something went wrong"
             json_response["error"] = f"{ex}"
-        
-        return Response(json_response, status=json_response['status_code'])
+
+        return Response(json_response, status=json_response["status_code"])

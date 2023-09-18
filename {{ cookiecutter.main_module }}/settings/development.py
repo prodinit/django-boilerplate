@@ -6,7 +6,7 @@ from .common import INSTALLED_APPS, TEMPLATES, env
 DEBUG = env.bool("DJANGO_DEBUG", default=True)
 TEMPLATES[0]["OPTIONS"]["debug"] = DEBUG  # type: ignore
 
-INTERNAL_IPS = ("127.0.0.1")
+INTERNAL_IPS = "127.0.0.1"
 
 ALLOWED_HOSTS = ["*"]
 

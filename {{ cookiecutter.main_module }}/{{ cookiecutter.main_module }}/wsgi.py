@@ -22,7 +22,7 @@ from dotenv import load_dotenv
 
 # Read .env file and set key/value inside it as environment variables
 # see: http://github.com/theskumar/python-dotenv
-load_dotenv(os.path.join(str(environ.Path(__file__)-2), ".env"))
+load_dotenv(os.path.join(str(environ.Path(__file__) - 2), ".env"))
 
 # We defer to a DJANGO_SETTINGS_MODULE already in the environment. This breaks
 # if running multiple sites in the same mod_wsgi process. To fix this, use

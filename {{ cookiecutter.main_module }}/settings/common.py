@@ -194,8 +194,7 @@ TEMPLATES = [
 ]
 
 
-WSGI_APPLICATION = '{{ cookiecutter.main_module }}.wsgi.application'
-
+WSGI_APPLICATION = "{{ cookiecutter.main_module }}.wsgi.application"
 
 
 # DATABASE CONFIGURATION
@@ -252,7 +251,9 @@ CORS_ALLOW_HEADERS = default_headers + ("access-control-allow-origin",)
 DEFAULT_RENDERER_CLASSES = ("rest_framework.renderers.JSONRenderer",)
 
 if DEBUG:
-    DEFAULT_RENDERER_CLASSES = DEFAULT_RENDERER_CLASSES + ("rest_framework.renderers.BrowsableAPIRenderer",)
+    DEFAULT_RENDERER_CLASSES = DEFAULT_RENDERER_CLASSES + (
+        "rest_framework.renderers.BrowsableAPIRenderer",
+    )
 
 REST_FRAMEWORK = {
     "DEFAULT_RENDERER_CLASSES": DEFAULT_RENDERER_CLASSES,
@@ -274,7 +275,7 @@ REST_FRAMEWORK = {
 
 # EMAIL CONFIGURATION
 # ------------------------------------------------------------------------------
-EMAIL_BACKEND ="django.core.mail.backends.smtp.EmailBackend"
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 DEFAULT_FROM_EMAIL = env(
     "DEFAULT_FROM_EMAIL", default="{{ cookiecutter.default_from_email }}"
 )
@@ -332,7 +333,7 @@ LOGGING = {
             "level": "ERROR",
             "filters": ["require_debug_false"],
             "class": "django.utils.log.AdminEmailHandler",
-        }
+        },
     },
     "loggers": {
         "django": {"handlers": ["null"], "propagate": False, "level": "INFO"},
@@ -346,8 +347,18 @@ LOGGING = {
             "level": "INFO",
             "propagate": False,
         },
-        "{{ cookiecutter.main_module }}": {"handlers": ["console"], "level": "INFO", "propagate": False},
+        "{{ cookiecutter.main_module }}": {
+            "handlers": ["console"],
+            "level": "INFO",
+            "propagate": False,
+        },
         # Catch All Logger -- Captures any other logging
-        "": {"handlers": ["console",], "level": "ERROR", "propagate": True},
+        "": {
+            "handlers": [
+                "console",
+            ],
+            "level": "ERROR",
+            "propagate": True,
+        },
     },
 }

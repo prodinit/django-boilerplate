@@ -1,4 +1,4 @@
-import jwt 
+import jwt
 from uuid import UUID
 
 from django.conf import settings
@@ -16,6 +16,7 @@ def get_token_for_user(user, scope: str) -> str:
     """Generate a new signed token containing a specified user limited for a scope (identified as a string)."""
     data = {"user_%s_id" % (scope): str(user.id)}
     return jwt.encode(data, settings.SECRET_KEY, algorithm=HS256_ALGORITHM)
+
 
 def get_user_for_token(token: str, scope: str):
     """
@@ -41,7 +42,8 @@ def get_user_for_token(token: str, scope: str):
         raise NotAuthenticated("Invalid token")
     else:
         return user
-    
+
+
 def encode_uuid_to_base64(uuid_) -> str:
     """Returns a  urlsafe based64 encoded representation of a UUID object or UUID like string."""
     return urlsafe_base64_encode(force_bytes(uuid_))
@@ -56,11 +58,13 @@ def decode_uuid_from_base64(uuid_value: str):
         return force_str(urlsafe_base64_decode(uuid_value))
     except (ValueError, OverflowError, TypeError):
         return None
-    
+
+
 def get_token_for_password_reset(user):
     return "{}::{}".format(
         encode_uuid_to_base64(user.pk), PasswordResetTokenGenerator().make_token(user)
     )
+
 
 def get_user_for_password_reset_token(token):
     default_error_messages = {

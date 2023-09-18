@@ -20,5 +20,5 @@ AUTH_PROVIDER = (
     (EMAIL, "email"),
     (PHONE_NUMBER, "phone_number"),
     (GOOGLE, "google"),
-    (GITHUB, "github")
+    (GITHUB, "github"),
 )
