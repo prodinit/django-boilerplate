@@ -70,6 +70,7 @@ boto3 = "~1.26.47"
 django-redis = "^5.2"
 hiredis = "^2.0"
 pycountry = "^22.3.5"
+jsonfield = "^3.1.0"
 
 
 [tool.poetry.dev-dependencies]
