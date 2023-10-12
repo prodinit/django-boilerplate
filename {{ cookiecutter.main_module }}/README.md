@@ -42,6 +42,17 @@ __Version:__ {{ cookiecutter.version }}
 - AWS clients and util functions
 - Pytest setup
 - Github Actions
+    > spell_check
+
+    > black_check
+    
+    > pydoc_check
+    
+    > password_check
+    
+    > test_cases
+    
+    > terraform_validate
 - Dockerfile.django for backend
 - Dockerfile.nginx for reverse proxy
 
@@ -63,6 +74,13 @@ Running `poetry lock` generates `poetry.lock` which has all versions pinned.
 You can install Poetry by using `pip install --pre poetry` or by following the official installation guide [here](https://github.com/python-poetry/poetry#installation).
 
 *Tip:* We recommend that you use this workflow and keep `pyproject.toml` as well as `poetry.lock` under version control to make sure all computers and environments run exactly the same code.
+
+### Celery
+To run Celery
+`celery -A {{ cookiecutter.main_module }} worker -l info`
+
+To run Celery Beat:
+`celery -A {{ cookiecutter.main_module }} beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler`
 
 ### Other tools
 

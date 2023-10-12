@@ -14,6 +14,8 @@ import environ
 from corsheaders.defaults import default_headers
 from django.utils.translation import gettext_lazy as _
 
+from kombu import Queue
+
 # Build paths inside the project like this: ROOT_DIR / 'subdir'.
 ROOT_DIR = environ.Path(__file__) - 3
 APPS_DIR = ROOT_DIR.path("{{ cookiecutter.main_module }}")
@@ -44,6 +46,7 @@ THIRD_PARTY_APPS = [
     "drf_yasg",
     "versatileimagefield",  # https://github.com/WGBH/django-versatileimagefield/
     "corsheaders",  # https://github.com/ottoyiu/django-cors-headers/
+    "django_celery_beat",
 ]
 
 LOCAL_APPS = [
@@ -370,3 +373,20 @@ LOGGING = {
 # PAYMENT CONFIGURATION
 # ------------------------------------------------------------------------------
 ORDER_ID_MAX_LENGTH = 8
+
+
+# DJANGO CELERY CONFIGURATION
+# -----------------------------------------------------------------------------
+# see: http://celery.readthedocs.org/en/latest/userguide/tasks.html#task-states
+CELERY_BROKER_URL = env("REDIS_URL", default="redis://localhost:6379/0")
+CELERY_RESULT_BACKEND = env("REDIS_URL", default="redis://localhost:6379/0")
+CELERY_ACCEPT_CONTENT = ["application/json"]
+CELERY_TASK_SERIALIZER = "json"
+CELERY_RESULT_SERIALIZER = "json"
+CELERY_TIMEZONE = env(
+    "CELERY_TIMEZONE", default=TIME_ZONE
+)  # Use Django's timezone by default
+CELERY_DEFAULT_QUEUE = 'default'
+CELERY_QUEUES = (
+    Queue('default')
+)
