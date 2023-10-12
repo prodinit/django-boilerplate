@@ -13,5 +13,8 @@ urlpatterns = default_router.urls
 
 urlpatterns += [
     # Register all your urls here
-    path("", include("users.urls"))
+    path("", include("users.urls")),
+    path("", include("payments.urls"))
+    # path("", include("slack_notification.urls"))
+    # path("", include("whatsapp_notification.urls"))
 ]
