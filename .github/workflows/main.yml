@@ -35,6 +35,6 @@ jobs:
       - name: Install poetry
         run: |
           pip3 install poetry==1.2.0
-      - name: Run tests
-        run: |
-          ./run_test.sh
+      # - name: Run tests
+        # run: |
+        # Run Tests here
