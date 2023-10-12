@@ -8,37 +8,26 @@ __Version:__ {{ cookiecutter.version }}
 ## Features
 - Django Rest Framework Project Setup
 - Authentication and Authorization
-    > /api/login
-    
-        This API takes email, password and returns jwt token
+    > /api/login: This API takes email, password and returns jwt token
 
-    > /api/signup
+    > /api/signup: This API takes email, password and sends and sends an account activation email 
 
-        This API takes email, password and sends and sends an account activation email 
+    > /api/activate?token=: This is the account activation email link
 
-    > /api/activate?token={}
+    > /api/logout: This API logs out the current user
 
-        This is the account activation email link
+    > /api/password_change: This API takes new_password of a logged in user and updates the current password
 
-    > /api/logout
+    > /api/password_reset: This API takes the email of user and sends an email with the instructions ot reset the password
 
-        This API logs out the current user
-
-    > /api/password_change
-
-        This API takes new_password of a logged in user and updates the current password
-
-    > /api/password_reset
-
-        This API takes the email of user and sends an email with the instructions ot reset the password
-
-    > /api/password_reset_confirm
-
-        This API takees the new_password and confirms the reset password with a reset password token in the query params
+    > /api/password_reset_confirm: This API takees the new_password and confirms the reset password with a reset password token in the query params
 
 - Google Auth
 - Payment gateway module setup
 - Celery setup
+    > To run Celery: `celery -A {{ cookiecutter.main_module }} worker -l info`
+
+    > To run Celery Beat: `celery -A {{ cookiecutter.main_module }} beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler`
 - AWS clients and util functions
 - Pytest setup
 - Github Actions

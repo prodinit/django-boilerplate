@@ -390,3 +390,9 @@ CELERY_DEFAULT_QUEUE = 'default'
 CELERY_QUEUES = (
     Queue('default')
 )
+
+# AWS CONFIGURATION
+# ------------------------------------------------------------------------------
+AWS_DEFAULT_REGION = env('AWS_DEFAULT_REGION')
+AWS_ACCESS_KEY_ID = env('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = env('AWS_SECRET_ACCESS_KEY')
