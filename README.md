@@ -79,6 +79,17 @@ poetry export --without-hashes -f requirements.txt -o requirements_dev.txt --wit
 - AWS clients and util functions
 - Pytest setup
 - Github Actions
+    > spell_check
+
+    > black_check
+    
+    > pydoc_check
+    
+    > password_check
+    
+    > test_cases
+    
+    > terraform_validate
 - Dockerfile.django for backend
 - Dockerfile.nginx for reverse proxy
 
