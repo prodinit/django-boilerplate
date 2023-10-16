@@ -164,9 +164,6 @@ class AuthViewSet(viewsets.GenericViewSet):
             "data": None,
         }
         try:
-            import pdb
-
-            pdb.set_trace()
             serializer = PasswordResetSerializer(data=request.data)
             serializer.is_valid(raise_exception=True)
             user = User.objects.filter(

@@ -73,6 +73,7 @@ pycountry = "^22.3.5"
 jsonfield = "^3.1.0"
 celery = "^5.3.4"
 django-celery-beat = "^2.5.0"
+oauthlib = "^3.2.2"
 
 
 [tool.poetry.dev-dependencies]

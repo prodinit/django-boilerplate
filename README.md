@@ -60,6 +60,9 @@ poetry export --without-hashes -f requirements.txt -o requirements_dev.txt --wit
     > /api/password_reset_confirm: This API takees the new_password and confirms the reset password with a reset password token in the query params
 
 - Google Auth
+    > /api/google/redirect: API to redirect to google oauth
+     
+    > /api/google/callback: Callback API for google Oauth
 - Payment gateway module setup
 - Celery setup
     > To run Celery: `celery -A {{ cookiecutter.main_module }} worker -l info`
