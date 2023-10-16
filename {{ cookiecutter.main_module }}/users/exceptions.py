@@ -39,3 +39,23 @@ class BadRequest(BaseException):
 
 class RequestValidationError(BadRequest):
     default_detail = _("Data validation error")
+
+
+class InvalidGoogleAuthCode(BaseException):
+    pass
+
+
+class InvalidGoogleAuthState(BaseException):
+    pass
+
+
+class GoogleAuthError(BaseException):
+    pass
+
+
+class GoogleLoginSessionError(BaseException):
+    pass
+
+
+class UnableToFetchAccessToken(BaseException):
+    pass
