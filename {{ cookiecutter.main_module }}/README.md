@@ -45,8 +45,9 @@ __Version:__ {{ cookiecutter.version }}
     > test_cases
     
     > terraform_validate
-- Dockerfile.django for backend
-- Dockerfile.nginx for reverse proxy
+- Dockerfile.django for backend: https://github.com/prodinit/ecs-django-scaffold
+- Dockerfile.nginx for reverse proxy: https://github.com/prodinit/ecs-django-scaffold
+- TF to deploy django app in ECS with circleci: https://github.com/prodinit/ecs-django-scaffold
 
 ## Getting up and running
 
