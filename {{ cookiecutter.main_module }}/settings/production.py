@@ -22,4 +22,4 @@ ALLOWED_HOSTS = env.list("ALLOWED_HOSTS")
 
 # CORS
 # --------------------------------------------------------------------------
-CORS_ALLOWED_ORIGINS = env.list("CORS_ALLOWED_ORIGINS")
+CORS_ALLOWED_ORIGINS = env.list("CORS_ALLOWED_ORIGINS", default=[])
