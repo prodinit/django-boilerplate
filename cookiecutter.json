@@ -9,5 +9,6 @@
     "version": "0.0.0",
     "_copy_without_render": [
         "*.tpl"
-    ]
+    ],
+    "add_payments_module": "n"
 }
