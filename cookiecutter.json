@@ -10,5 +10,6 @@
     "add_payments_module": "n",
     "_copy_without_render": [
         "*.tpl"
-    ]
+    ],
+    "add_payments_module": "n"
 }
